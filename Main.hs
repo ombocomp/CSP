@@ -1,0 +1,2 @@
+import Algorithms.SimpleCSP
+import Algorithms.SimpleCSP.Examples.Wolf

@@ -1,12 +1,10 @@
 module CSP where
 
-import Prelude hiding (init, succ, pred)
-import Control.Arrow
+import Prelude hiding (init, succ)
 import Data.Set (Set)
+import Data.Eq
 import qualified Data.Set as S
 import qualified Data.Map as Map
-import qualified Data.List as L
-import qualified Data.Foldable as F
 import Data.Foldable (Foldable)
 import Data.Ord (comparing)
 import Data.Maybe
@@ -58,20 +56,3 @@ csp constraints variables = mkSolution $ dfs init succ goal
 
          mkSolution = undefined
 
-mkCG :: (Foldable d, Ord v, Ord a)
-     => d (Constraint v a)
-     -> [(v,[a])]
-     -> ConstraintGraph v a
-mkCG constraints variables = CG{cgvars=vars,cgdoms=doms}
-   where 
-         -- The CG with just the variables and domains.
-         cgSkeleton = Map.fromList $ map (\(v,d) -> (v,(d,[]))) variables
-
-         -- fold over the constraints by inserting them into the CG
-         vars = F.foldl' insert' cgSkeleton constraints
-
-         insert' m c = Map.insertWith addConstraint (from c) ([],[c]) m
-         addConstraint (_,[c]) (d,cs) = (d,c:cs)
-
-
-         doms = Map.fromList $ groupByKey (==) $ map switch variables

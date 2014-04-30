@@ -35,11 +35,11 @@ instance (Ord v, Ord a) => Ord (CSPNode v a) where
 
 -- |Solves a CSP with finite-domain variables and returns
 --  the set of all found solutions.
-csp :: (Retrievable d1, Foldable d1, Retrievable d2, Ord v, Ord a)
+csp :: (Retrievable d1, Foldable d1, Retrievable d2, Functor d2, Ord v, Ord a)
     => d1 (Constraint v a)
     -> [(v,[a])]
     -> Set (Solution d2 v a)
-csp constraints variables = mkSolution $ dfs init succ goal
+csp constraints variables = fmap mkSolution $ dfs init succ goal
    where -- initial node: no assignments, all variables remaining,
          --  fresh constraint graph
          init = CSPNode Map.empty
@@ -60,7 +60,8 @@ csp constraints variables = mkSolution $ dfs init succ goal
          goal (CSPNode _ [] _) = True
          goal _ = False
 
-         mkSolution = undefined
+         mkSolution :: CSPNode v a -> Solution d2 v a
+         mkSolution = (`insertAll` new) . map (Map.toList . cspnodeAssignments) . elems
 
 -- |Gets the most constrained variable from a list, i.e.
 --  the one with the smallest number of possible values.

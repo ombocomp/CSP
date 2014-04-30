@@ -65,7 +65,9 @@ class DataStructure d => Retrievable d where
 
 -- |Inserts all elements in a foldable container into a data structure.
 insertAll :: (Eq a, Ord a, DataStructure d, Foldable f)
-          => f a -> d a -> d a
+          => f a -- ^The source container.
+          -> d a -- ^The target container.
+          -> d a
 insertAll = flip (F.foldl' (flip insert))
 
 ----------- Instances

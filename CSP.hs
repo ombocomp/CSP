@@ -3,7 +3,8 @@ module CSP (
    csp
    )where
 
-import Prelude hiding (init, succ)
+import Prelude hiding (init, succ, Functor(..))
+import Data.Functor.Ord
 import Data.Set (Set)
 import Data.Eq
 import Data.Maybe (fromJust, listToMaybe)
@@ -35,9 +36,9 @@ instance (Ord v, Ord a) => Ord (CSPNode v a) where
 
 -- |Solves a CSP with finite-domain variables and returns
 --  the set of all found solutions.
-csp :: (Retrievable d1, Foldable d1, Retrievable d2, Functor d2, Ord v, Ord a)
-    => d1 (Constraint v a)
-    -> [(v,[a])]
+csp :: (Retrievable d1, Foldable d1, Retrievable d2, Ord v, Ord a, Ord (d2 (v,a)))
+    => d1 (Constraint v a) -- ^A collection of constraints.
+    -> [(v,[a])]           -- ^List of existing variables, with their initial domains.
     -> Set (Solution d2 v a)
 csp constraints variables = fmap mkSolution $ dfs init succ goal
    where -- initial node: no assignments, all variables remaining,
@@ -46,7 +47,8 @@ csp constraints variables = fmap mkSolution $ dfs init succ goal
                         (map fst variables)
                         (mkCG constraints variables)
 
-         -- successor: take the next variable and assign it every possible value.
+         -- successor: take the most constrained unassigned variables
+         -- and assign it every possible value.
          succ (CSPNode _ [] _) = S.empty
          succ (CSPNode a ns cg) = 
             S.fromList (do let (nextVar,vals) = fromJust $ mostConstrainedVariable ns cg
@@ -60,8 +62,8 @@ csp constraints variables = fmap mkSolution $ dfs init succ goal
          goal (CSPNode _ [] _) = True
          goal _ = False
 
-         mkSolution :: CSPNode v a -> Solution d2 v a
-         mkSolution = (`insertAll` new) . map (Map.toList . cspnodeAssignments) . elems
+         -- extracts the assignments from a CSP, discarding the fluff.
+         mkSolution = (`insertAll` new) . Map.toList . cspnodeAssignments
 
 -- |Gets the most constrained variable from a list, i.e.
 --  the one with the smallest number of possible values.

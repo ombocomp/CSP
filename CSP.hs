@@ -1,3 +1,7 @@
+-- |Simple CSP solver which returns the set of all solutions for a
+--  CSP. It performs both forward checking (for arc consistency) and
+--  utilizes the ``most constrained variable'' variable selection
+--  heuristic.
 module CSP (
    Solution,
    csp

@@ -1,4 +1,7 @@
-module CSP where
+module CSP (
+   Solution,
+   csp
+   )where
 
 import Prelude hiding (init, succ)
 import Data.Set (Set)
@@ -15,15 +18,14 @@ import Search
 import ConstraintGraph
 
 
-data VariableStratum v = VS [v]
-data ConstraintStratum c = CS [c]
-
-type Stratum v c = (VariableStratum v, ConstraintStratum c)
+-- |A solution to a CSP: a collection of variable-value pairs.
 type Solution d v a = d (v,a)
 
-data CSPNode v a = CSPNode{cspnodeAssignments::Map.Map v a,
-                           cspnodeRemaining::[v],
-                           cspnodeCG::ConstraintGraph v a}
+-- |A node in the CSP search tree.
+data CSPNode v a = CSPNode{cspnodeAssignments::Map.Map v a, -- ^Past variable assignments.
+                           cspnodeRemaining::[v], -- ^Remaining, unassigned variables.
+                           cspnodeCG::ConstraintGraph v a -- ^Current constaint graph.
+                           }
 
 instance (Eq v, Ord a) => Eq (CSPNode v a) where
    (==) = equating cspnodeAssignments
@@ -31,10 +33,12 @@ instance (Eq v, Ord a) => Eq (CSPNode v a) where
 instance (Ord v, Ord a) => Ord (CSPNode v a) where
    compare = comparing cspnodeAssignments
 
-csp :: (Retrievable d1, Foldable d1, Ord v, Ord a)
+-- |Solves a CSP with finite-domain variables and returns
+--  the set of all found solutions.
+csp :: (Retrievable d1, Foldable d1, Retrievable d2, Ord v, Ord a)
     => d1 (Constraint v a)
     -> [(v,[a])]
-    -> Set (CSPNode v a)
+    -> Set (Solution d2 v a)
 csp constraints variables = mkSolution $ dfs init succ goal
    where -- initial node: no assignments, all variables remaining,
          --  fresh constraint graph

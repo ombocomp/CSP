@@ -9,6 +9,7 @@ Static CSP
 The static CSP solver solves the classical CSP problem: given a list of variables (with the domains) and a constraint graph, find a variable assignment s.t. the constraint graph is satisfied.
 
 The solver is found in the CSP module and makes use of the following two heuristics:
+
 1. Forward checking for arc consistency - assignments which would *immediately* lead to a variable having no more possible values are not made.
 2. Most constrained variables first - the variable which has the least number of possible values is assigned before all other variables, minimizing the branching factor of the search tree.
 

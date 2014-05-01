@@ -14,11 +14,11 @@ The solver is found in the CSP module and makes use of the following two heurist
 
 The solver then delivers the set of all satisfying variable assignments.
 
-### Formal definition
+#### Formal definition
 
 Input:
 * A list of variable-domain pairs `[(v,[d])]`.
-* A collection of constraints `d (c v d)`, where `d` is a collection and `c v d` is a constraint with variable type `v` and domain type `d`. A constraint `v1 => v2` from variables `v1` to `v2` contains a function `d -> [d]`, which, given a hypothetical assignment `d` to `v1`, returns the list `[d]` of remaining possible values for `v2`.
+* A collection of constraints `d (c v d)`, where `d` is a collection and `c v d` is a constraint with variable type `v` and domain type `d`. Constraints go from a variable `v1` to another variable `v2` and contain a function `d -> [d]`, which, given a hypothetical assignment `d` to `v1`, returns the list `[d]` of remaining possible values for `v2`.
 
 Output:
 * A set of solutions `Set Solution`, where `Solution = [(v,d)]`, representing the variables with their assigned values.

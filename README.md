@@ -6,9 +6,23 @@ A CSP solver for both static and dynamic CSPs in Haskell. Handles arbitrary bina
 Static CSP
 ----------
 
-The static CSP solver is found in CSP.hs. Static CSPs are specified via a list of variable-domain pairs [(v,[d])] and a collection of directed, binary constraints. A constraint from `v1 -> v2` can be any computable function `a -> [b]` which, given an assigment of a value `a` to `v1`, returns the list `[b]` of remaining possible values for `v2`.
+The static CSP solver solves the classical CSP problem: given a list of variables (with the domains) and a constraint graph, find a variable assignment s.t. the constraint graph is satisfied.
 
-Given a list of variables and a collection of constraints, the CSP solver returns the set of all solutions.
+The solver is found in the CSP module and makes use of the following two heuristics:
+1. Forward checking for arc consistency - assignments which would *immediately* lead to a variable having no more possible values are not made.
+2. Most constrained variables first - the variable which has the least number of possible values is assigned before all other variables, minimizing the branching factor of the search tree.
+
+The solver then delivers the set of all satisfying variable assignments.
+
+### Formal definition
+
+Input:
+
+* A list of variable-domain pairs `[(v,[d])]`.
+* A collection of constraints `d (c v d)`, where `d` is a collection and `c v d` is a constraint with variable type `v` and domain type `d`. A constraint `v1 => v2` from variables `v1` to `v2` contains a function `d -> [d]`, which, given a hypothetical assignment `d` to `v1`, returns the list `[d]` of remaining possible values for `v2`.
+
+Output:
+* A set of solutions `Set Solution`, where `Solution = [(v,d)]`, representing the variables with their assigned values.
 
 Dynamic CSP.
 ----------

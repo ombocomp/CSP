@@ -15,7 +15,6 @@
 --  Adapted from 'http://okmij.org/ftp/Haskell/types.html#restricted-datatypes'.
 module Data.Functor.MultiParam (
    Functor'(..),
-   (<$>)
    ) where
 
 import qualified Data.Set as Set
@@ -25,16 +24,8 @@ import Text.ParserCombinators.ReadPrec(ReadPrec)
 import GHC.Conc(STM)
 import Control.Applicative(ZipList)
 
---infixl 4 <$
-infixl 4 <$>
-
 class Functor' f a b where
    fmap' :: (a -> b) -> f a -> f b
-   --(<$) :: a -> f b -> f a
-   --x <$ f = fmap' (const x) f
-
-(<$>) :: (Functor' f a b) => (a -> b) -> f a -> f b
-(<$>) = fmap'
 
 instance Functor' [] a b where fmap' = fmap
 instance Functor' IO a b where fmap' = fmap
